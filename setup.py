@@ -27,6 +27,6 @@ setup(name=NAME,
       author=AUTHOR,
       author_email=EMAIL,
       url=URL,
-      install_require=REQUIRED,
+      install_requires=REQUIRED,
       packages=PACKEGES
      )
