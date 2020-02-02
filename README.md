@@ -16,4 +16,4 @@ if __name__ == '__main__':
 
   app.convert(2, font='consolas')
     
-  app.save_asciiImage(r'result/path')```
+  app.save_asciiImage(r'result/path')
