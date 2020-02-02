@@ -6,11 +6,11 @@ import time
 class GrayscaleToAscii:
     # chars for replace pixels
     CHARS_CODE = None
-    CHARS = ' .+|=*$#%@'
+    CHARS = ' .+=*!%#$@'
+    DUB_FILL = ' '
     def __init__(self):
         # in class static method doesnt work
         if self.CHARS_CODE == None:
-            chars = "!@#$%*()_-+=\\/ "  # 16
             # ' -=*@#%'
             # ' -~/+=*$#%@'
             self.CHARS_CODE = self.create_chars_code(self.CHARS)
@@ -30,21 +30,21 @@ class GrayscaleToAscii:
         """
         # list: we need to change "col" value for '\n' char
         shape = list(arrayImage.shape)
-        shape[1] += 1
-        shape[2] = times_dublicate
+        shape.append(times_dublicate) # append: for 3 d array
+        shape[1] += 1  # '\n' char
         self.arrayAscii = np.chararray(shape)
-        shape[1] -= 1
+        shape[1] -= 1  # '\n' char
 
         for row in range(shape[0]):
             for col in range(shape[1]):
                 # convert pixel into ascii char and
                 for dublicate in range(times_dublicate):
-                    self.arrayAscii[row][col][dublicate] = self.CHARS_CODE[arrayImage[row][col][0]]
+                    self.arrayAscii[row][col][dublicate] = self.CHARS_CODE[arrayImage[row][col]]
             # last elem
             self.arrayAscii[row][shape[1]][0] = '\n'
             # fill void in '\n' array
             for dublicate in range(1, times_dublicate):
-                self.arrayAscii[row][shape[1]][dublicate] = ' '
+                self.arrayAscii[row][shape[1]][dublicate] = self.DUB_FILL
 
     def get_text(self):
         return self.arrayAscii.astype('|S1').tostring().decode('utf-8')

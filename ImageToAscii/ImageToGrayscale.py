@@ -43,20 +43,18 @@ class ImageToGrayscale:
         15: 16,
         0: 0
     }
-    def __init__(self, imagePath):
-        image = Image.open(imagePath).convert("LA")
-        self.arrayImage = np.array(image)
+    def __init__(self, image):
+        self.arrayImage = np.array(image.convert("L"))
     
-    def changeArrayImage(self, imagePath):
-        image = Image.open(imagePath).convert("LA")
-        self.arrayImage = np.array(image)
+    def changeArrayImage(self, image):
+        self.arrayImage = np.array(image.convert("L"))
 
     def convert(self):  # roundValues
         shape = self.arrayImage.shape
         for row in range(shape[0]):
             for col in range(shape[1]):
                 # round value of pixel
-                self.arrayImage[row][col][0] = self.pixelRound(self.arrayImage[row][col][0]);
+                self.arrayImage[row][col] = self.pixelRound(self.arrayImage[row][col]);
         # self.image = Image.fromarray(arrayIm)
         # return arrayIm
 
