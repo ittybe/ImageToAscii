@@ -1,4 +1,5 @@
-from PIL import Image
+# from PIL import Image
+import cv2
 import numpy as np
 import sys
 import time
@@ -43,11 +44,11 @@ class ImageToGrayscale:
         15: 16,
         0: 0
     }
-    def __init__(self, image):
-        self.arrayImage = np.array(image.convert("L"))
+    def __init__(self, arrayImage):
+        self.arrayImage = arrayImage
     
-    def changeArrayImage(self, image):
-        self.arrayImage = np.array(image.convert("L"))
+    def set_arrayImage(self, arrayImage):
+        self.arrayImage = arrayImage
 
     def convert(self):  # roundValues
         shape = self.arrayImage.shape
@@ -67,20 +68,20 @@ class ImageToGrayscale:
                 return ImageToGrayscale.ROUND_BRIGHTNESS[key]
 
     def save(self, imagePath):
-        image = Image.fromarray(self.arrayImage)
-        image.convert("RGB").save(imagePath)
+        cv2.imwrite(imagePath, self.arrayImage)
 
-    def resize(self, basewidth):
-        image = Image.fromarray(self.arrayImage)
-        wpercent = (basewidth / float(image.size[0]))
-        hsize = int((float(image.size[1]) * float(wpercent)))
-        image = image.resize((basewidth, hsize), Image.ANTIALIAS)
-        self.arrayImage = np.array(image)
+    def resize_scale(self, scale):
+        shape = self.arrayImage.shape
+        width = int(shape[1] * scale)
+        height = int(shape[0] * scale)
+        new_shape = (width, height)
+        # resize
+        self.arrayImage = cv2.resize(self.arrayImage, new_shape)
 
-    def resize_h(self, width, height):
-        image = Image.fromarray(self.arrayImage)
-        image = image.resize((width, height), Image.ANTIALIAS)
-        self.arrayImage = np.array(image)
+    def resize(self, width, height):
+        new_shape = (width, height)
+        # resize
+        self.arrayImage = cv2.resize(self.arrayImage, new_shape)
 
 if __name__ == '__main__':
     image = ImageToGrayscale(r"images\aqua_(konosuba).jpg")

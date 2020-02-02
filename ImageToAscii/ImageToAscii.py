@@ -3,8 +3,9 @@ from .GrayscaleToAscii import GrayscaleToAscii
 import pyvips
 import numpy as np
 import time
-from PIL import Image
 import re
+import cv2
+from PIL import Image
 
 class ImageToAscii:
     def __init__(self, image):
@@ -14,26 +15,30 @@ class ImageToAscii:
         self.grayToAscii = GrayscaleToAscii()
 
         # and after that this will convert text into image(png, jpg, ...)
-        self.asciiToImage = None
+        self.asciiImage = None
         #
     def set_image_by_path(self, imagePath):
-        im = Image.open(imagePath)
-        self.imageToGray.changeArrayImage(im)
+        self.imageToGray.set_arrayImage(cv2.imread(imagePath, 0))
     
-    def set_image(self, image):
-        # change focus image not throught path
-        self.imageToGray.changeArrayImage(image)
+    def set_image(self, arrayImage):
+        # change focus array image, but not throught path
+        self.imageToGray.set_arrayImage(arrayImage)
 
+    def resize_grayscaleArray(self, width, height):
+        self.imageToGray.resize(width, height)
+
+    def resize_grayscaleArray_scale(self, scale):
+        self.imageToGray.resize_scale(scale)
+    
+    def resize_asciiImage(self, scale):
+        self.asciiImage = self.asciiImage.resize(scale)
+
+    # image of pixel but its ascii
+    def get_asciiImage(self):
+        return self.asciiImage
     # grayscale array
     def get_grayscaleArray(self):
         return self.imageToGray.arrayImage
-
-    def resize_grayscaleArray_h(self, width, height):
-        self.imageToGray.resize_h(width, height)
-
-    def resize_grayscaleArray(self, basewidth):
-        self.imageToGray.resize(basewidth)
-    # array of ascii chars
     def get_asciiArray(self):
         """
         :return: numpy array with chars
@@ -42,17 +47,13 @@ class ImageToAscii:
 
     def save_asciiText(self, filename):
         self.grayToAscii.save(filename)
-
-    # image of pixel but its ascii
-    def get_asciiImage(self):
-        return self.asciiToImage
-
+    
     def save_asciiImage(self, filename, scale=1):
         # resize image to original sizes
-        self.asciiToImage = self.asciiToImage.resize(scale)
+        self.asciiImage = self.asciiImage.resize(scale)
         #  make bg white and text black
 
-        self.asciiToImage.write_to_file(filename)
+        self.asciiImage.write_to_file(filename)
 
     def convert(self, time_dublicate = 1,
                 textcolor=[0,0,0], backgroundcolor=[255,255,255],
@@ -67,15 +68,14 @@ class ImageToAscii:
         self.grayToAscii.convert(self.get_grayscaleArray(),
                                  times_dublicate=time_dublicate)
 
-        # it s tuple, we convert it into string
-        textAscii = str(self.grayToAscii.get_text())
-
-        self.asciiToImage = pyvips.Image.text(
-            re.sub(GrayscaleToAscii.DUB_FILL, '',textAscii), **kwargs,
+        textAscii = self.grayToAscii.get_text()
+        # render image
+        self.asciiImage = pyvips.Image.text(
+            textAscii, **kwargs,
         )
 
         # recolor image
-        self.asciiToImage = self.asciiToImage.ifthenelse(
+        self.asciiImage = self.asciiImage.ifthenelse(
             textcolor, backgroundcolor, blend=True
         )
 

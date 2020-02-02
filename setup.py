@@ -7,7 +7,7 @@ URL = "https://github.com/ittybe/imageToAscii"
 EMAIL = ""
 AUTHOR = "ittybe"
 REQUIRES_PYTHON = ">=3.7.0"
-VERSION = "1.0.4a"
+VERSION = "1.0.5a"
 
 PY_MODULES = []
 
