@@ -4,20 +4,25 @@ import pyvips
 import numpy as np
 import time
 from PIL import Image
+import re
 
 class ImageToAscii:
-    def __init__(self, imagePath):
+    def __init__(self, image):
         # convert image in grayscale
-        self.imageToGray = ImageToGrayscale(imagePath)
+        self.imageToGray = ImageToGrayscale(image)
         # than this will convert it into text
         self.grayToAscii = GrayscaleToAscii()
 
         # and after that this will convert text into image(png, jpg, ...)
         self.asciiToImage = None
         #
-    def change_focus_image(self, imagePath):
-        self.imageToGray.__init__(imagePath)
-
+    def set_image_by_path(self, imagePath):
+        im = Image.open(imagePath)
+        self.imageToGray.changeArrayImage(im)
+    
+    def set_image(self, image):
+        # change focus image not throught path
+        self.imageToGray.changeArrayImage(image)
 
     # grayscale array
     def get_grayscaleArray(self):
@@ -54,10 +59,8 @@ class ImageToAscii:
                 **kwargs):
         """
         this convert image to Ascii png
-        original width / original height = your width / calced height
-        :param filename: path to save ascii image
         :param time_dublicate: dublicate char in ascii txt (except '\n')
-        :param kwargs: for pyvips.Image.text
+        :param kwargs: for pyvips.Image.text(kwargs)
         :return: None
         """
         self.imageToGray.convert()
@@ -66,8 +69,9 @@ class ImageToAscii:
 
         # it s tuple, we convert it into string
         textAscii = str(self.grayToAscii.get_text())
+
         self.asciiToImage = pyvips.Image.text(
-            textAscii, **kwargs,
+            re.sub(GrayscaleToAscii.DUB_FILL, '',textAscii), **kwargs,
         )
 
         # recolor image
@@ -85,7 +89,8 @@ if __name__ == '__main__':
     # todo convert list into numpy array in gray to ascii
     # 600 px
     # 37.03298568725586 vs 42.14830756187439 vs 7.7971556186676025 vs 8.37460708618164 vs 9.05478835105896
-    app = ImageToAscii(r'C:\Users\Lenovo\OneDrive\Pictures\Saved Pictures\Alan-Turing-passport-1200x720.jpg')
+    im = Image.open(r'C:\Users\Lenovo\OneDrive\Pictures\Saved Pictures\Alan-Turing-passport-1200x720.jpg')
+    app = ImageToAscii(im)
     origin_width = app.get_grayscaleArray().shape[1]
     new_width = 400
     app.resize_grayscaleArray(new_width)
@@ -93,6 +98,7 @@ if __name__ == '__main__':
     app.convert(2, font='consolas')
     im = Image.fromarray(app.get_grayscaleArray())
     new_width = app.get_asciiImage().width
+    
     app.save_asciiImage(r'alan turing.png',
                         scale=origin_width/new_width*0+1)
     print(time.time()-start_time, " second")
