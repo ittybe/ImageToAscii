@@ -6,7 +6,8 @@ sorry for missing docs
 now i can only give you example of converting 
 
 
-```from ImageToAscii import *
+```
+from ImageToAscii import *
 if __name__ == '__main__':
   im = cv2.imread(r'pic\path.png', 0)
 
