@@ -14,7 +14,7 @@ PY_MODULES = []
 REQUIRED = [
     'cffi',
     'numpy',
-    'Pillow',
+    'opencv-python',
     'pycparser',
     'pyvips',
 ]
